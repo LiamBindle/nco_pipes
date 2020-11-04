@@ -1,0 +1,19 @@
+#!/bin/bash
+NCKS_PIPED_USAGE="""Wrapper for using ncks with pipes.
+
+usage: 
+ncks_piped ARGS...
+   ARGS...: Arguments to ncks
+ncks_piped [-h] [--help]
+   Prints this help message
+"""
+if [[ ( $* == --help ) ||  ( $* == -h ) || $# -eq 0 ]]; then 
+   echo "$NCKS_PIPED_USAGE" 
+   exit 0
+fi 
+
+ncks_piped_fname=/dev/shm/nco_piped-$RANDOM.nc 
+cat > $ncks_piped_fname                            # temporary file in memory from stdin
+ncks -O "$@" $ncks_piped_fname $ncks_piped_fname   # ncks with '-O' on temporary file
+cat $ncks_piped_fname                              # write temporary file to stdout
+rm $ncks_piped_fname                               # delete temporary file
